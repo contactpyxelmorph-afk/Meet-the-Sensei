@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --bg:#020c02; --surface:#050f05; --surface2:#081208;
+  --bg:#03050f; --surface:#070a18; --surface2:#0a0e1f;
   --green:#00ff41; --green2:#00c832; --gdim:rgba(0,255,65,0.55);
   --text:#ccffcc; --muted:#4d7a4d; --border:rgba(0,255,65,0.14);
   --mono:'Share Tech Mono',monospace;
@@ -30,7 +30,7 @@ body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;back
 .w{position:relative;z-index:2;max-width:1100px;margin:0 auto;padding:0 36px}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 0;background:rgba(2,12,2,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 0;background:rgba(3,5,15,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
 nav .w{display:flex;align-items:center;justify-content:space-between}
 .nl{font-family:var(--mono);font-size:13px;color:var(--green);text-decoration:none;letter-spacing:.1em}
 .nl-links{display:flex;gap:28px;list-style:none}
@@ -512,7 +512,7 @@ footer p{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacin
         <p class="cintro" style="margin-bottom:36px">Open to engineering internships, software development collaborations, and projects at the intersection of mechanical engineering and applied software.<br/><br/>Languages: English (native) &middot; Italian (native) &middot; French (basic). Nationality: Italian &middot; American.</p>
         <div class="crow">
           <p class="clabel">Email</p>
-          <a href="mailto:contact.pyxelmorph@gmail.com" class="cval">contact.pyxelmorph@gmail.com</a>
+          <a href="/cdn-cgi/l/email-protection#096a66677d686a7d277970716c6564667b7961496e64686065276a6664" class="cval"><span class="__cf_email__" data-cfemail="e98a86879d888a9dc79990918c8584869b9981a98e84888085c78a8684">[email&#160;protected]</span></a>
         </div>
         <div class="crow">
           <p class="clabel">Phone</p>
@@ -570,7 +570,7 @@ footer p{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacin
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── CUSTOM CURSOR ─────────────────────────────────────────────
 const cur  = document.getElementById('cur');
 const curR = document.getElementById('cur-r');
@@ -609,20 +609,20 @@ document.querySelectorAll('a,button,.acard,.si,.sbox').forEach(el=>{
   window.addEventListener('resize', resize);
 
   function draw(){
-    ctx.fillStyle = 'rgba(2,12,2,.058)';
+    ctx.fillStyle = 'rgba(3,5,15,.062)';
     ctx.fillRect(0,0,W,H);
     ctx.font = FS + 'px "Share Tech Mono",monospace';
     for(let i=0; i<cols; i++){
       const y = Math.floor(drops[i]) * FS;
-      // Head — bright
-      ctx.fillStyle = `rgba(210,255,210,${.8+bright[i]*.2})`;
+      // Head — bright cyan-white
+      ctx.fillStyle = `rgba(200,245,255,${.82+bright[i]*.18})`;
       ctx.fillText(CHARS[Math.floor(Math.random()*CHARS.length)], i*FS, y);
-      // Trail
+      // Trail — cyan to blue
       for(let t=1;t<=4;t++){
         const ty = y - t*FS;
         if(ty < 0) continue;
-        const a = (.55 - t*.12) * (.65 + bright[i]*.35);
-        ctx.fillStyle = `rgba(0,${170+bright[i]*70},${35+bright[i]*25},${a})`;
+        const a = (.52 - t*.11) * (.65 + bright[i]*.35);
+        ctx.fillStyle = `rgba(0,${180+bright[i]*60},${210+bright[i]*45},${a})`;
         ctx.fillText(CHARS[Math.floor(Math.random()*CHARS.length)], i*FS, ty);
       }
       drops[i] += speed[i];
@@ -668,6 +668,8 @@ const obs = new IntersectionObserver(entries=>{
 },{threshold:.07, rootMargin:'0px 0px -24px 0px'});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 </script>
+
+<!-- Visitor tracker -->
 <img src="https://visitor-badge.laobi.icu/badge?page_id=contactpyxelmorph-afk.meet-the-sensei" style="display:none">
 </body>
 </html>
