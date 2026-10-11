@@ -1,0 +1,6 @@
+import {initializeExperience} from './experience.mjs';
+const $=s=>document.querySelector(s);
+const skills=[['Advanced programming','#b89aff','#software','<path d="m8 6-6 6 6 6m8-12 6 6-6 6m-3-15-2 18"/>'],['Mechanical engineering','#7acaf2','#research','<path d="m10 2 4 0 1 3 3 1 3-1 2 4-2 3 0 3 2 3-3 3-3-1-3 1-1 3-4 0-1-3-3-1-3 1-2-4 2-3 0-3-2-3 3-3 3 1z" transform="translate(1 1) scale(.85)"/><circle cx="12" cy="12" r="3"/>'],['Competitive chess','#e5c26d','#chess','<path d="M6 21h13l-2-4H8zM8 17l1-6-4 1 1-6 5-4 1 3 4 2 2 10M8 7h1"/>'],['Classical piano','#eb9dc7','#music','<path d="M9 18V5l12-3v14M9 9l12-3"/><ellipse cx="6" cy="18" rx="3" ry="2"/><ellipse cx="18" cy="16" rx="3" ry="2"/>'],['Materials science','#86d4b1','#skills','<path d="m12 2 9 5v10l-9 5-9-5V7zM3 7l9 5 9-5M12 12v10M12 2v10M3 17l9-5 9 5"/>'],['Data acquisition & analysis','#ec9b80','#skills','<path d="M2 13h4l2-8 4 15 3-11 2 4h5M2 22h20"/>']];
+skills.forEach(([name,color,href,icon],i)=>{const a=document.createElement('a');a.className='capsule';a.href=href;a.style.setProperty('--color',color);a.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true">${icon}</svg><span><span class="capsule-index">DISCIPLINE / 0${i+1}</span>${name}</span>`;a.tabIndex=-1;$('#capsules').append(a)});
+
+initializeExperience();
