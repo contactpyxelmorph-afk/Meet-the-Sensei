@@ -67,7 +67,7 @@ export function initializeExperience(){
   const id=++runId;cancelDoor();mode='loading';completed=false;lockScene(true);
   audio.pause();controls(false);hero.classList.add('soundtrack-running');$('.hero-footer').inert=true;gate.hidden=false;gate.inert=false;gate.classList.remove('opening');
   hero.classList.remove('settled','awakened');stage.style.opacity=0;stage.setAttribute('aria-hidden','true');character.style.opacity=0;$('.face').style.opacity=0;prelude.style.opacity=0;
-  $('#shockwave').classList.remove('hit');$('#enter').disabled=true;note.textContent='Preparing the entrance…';$('#door-progress').textContent='';
+  $('#fracture').style.opacity=0;$('#enter').disabled=true;note.textContent='Preparing the entrance…';$('#door-progress').textContent='';
   try{
    // Prime this same media element silently inside the Enter gesture. Its clock is
    // reset afterwards; the audible soundtrack starts only after the door finishes.
@@ -95,7 +95,7 @@ export function initializeExperience(){
  }
  function complete(){
   if(completed)return;completed=true;hero.classList.add('settled','awakened');stage.removeAttribute('aria-hidden');
-  $('#shockwave').classList.add('hit');status.textContent='SIX DISCIPLINES. ONE ORBIT.';
+  status.textContent='SIX DISCIPLINES. ONE ORBIT.';
  }
  $('#enter').addEventListener('click',start);$('#replay').addEventListener('click',start);$('#skip').addEventListener('click',finishStatic);
  $('.skip-link').addEventListener('click',()=>{if(locked)finishStatic()});
@@ -119,29 +119,81 @@ export function initializeExperience(){
  function resize(){w=hero.clientWidth;h=hero.clientHeight;stageW=stage.clientWidth;stageH=stage.clientHeight;const dpr=Math.min(devicePixelRatio||1,2);canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
  new ResizeObserver(resize).observe(hero);resize();
  const rand=(seed)=>{const n=Math.sin(seed*127.1+311.7)*43758.5453;return n-Math.floor(n)};
- function boltPath(x1,y1,x2,y2,seed,amplitude,count=20){
-  const points=[];for(let j=0;j<=count;j++){const p=j/count;points.push([x1+(x2-x1)*p+(j&&j<count?(rand(seed+j)-.5)*amplitude*.45:0),y1+(y2-y1)*p+(j&&j<count?(rand(seed+j+70)-.5)*amplitude:0)])}return points;
+ // Midpoint displacement preserves the irregular structure of a discharge.
+ function boltPath(x1,y1,x2,y2,seed,roughness,depth=6){
+  function split(a,b,n,k,spread){
+   if(!n)return[a,b];
+   const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy)||1;
+   const bend=(rand(k)-.5)*spread,along=.38+rand(k+17)*.24;
+   const mid=[a[0]+dx*along-dy/len*bend,a[1]+dy*along+dx/len*bend];
+   return [...split(a,mid,n-1,k*2+1,spread*.55).slice(0,-1),...split(mid,b,n-1,k*2+2,spread*.55)];
+  }
+  return split([x1,y1],[x2,y2],depth,seed,roughness);
  }
  function strokeBolt(points,alpha,width){
   ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));
-  ctx.strokeStyle=`rgba(139,95,221,${alpha*.36})`;ctx.lineWidth=width*6;ctx.shadowColor='#9b73ed';ctx.shadowBlur=17;ctx.stroke();
-  ctx.strokeStyle=`rgba(174,205,244,${alpha*.7})`;ctx.lineWidth=width*1.6;ctx.shadowBlur=5;ctx.stroke();
-  ctx.strokeStyle=`rgba(224,228,250,${alpha*.7})`;ctx.lineWidth=width*.48;ctx.shadowBlur=0;ctx.stroke();
+  ctx.lineJoin='round';ctx.lineCap='round';ctx.shadowBlur=0;
+  ctx.strokeStyle=`rgba(133,166,231,${alpha*.13})`;ctx.lineWidth=width*9;ctx.stroke();
+  ctx.strokeStyle=`rgba(178,202,255,${alpha*.35})`;ctx.lineWidth=width*2.8;ctx.stroke();
+  ctx.strokeStyle=`rgba(248,250,255,${alpha})`;ctx.lineWidth=width;ctx.stroke();
  }
  function drawLightning(t){
   if(reduced||t<.8||t>=START)return;
-  const k=Math.floor((t-.8)/1.6),age=(t-.8)-k*1.6;
-  if(age>.72)return;
-  const strength=Math.sin(Math.PI*clamp(age/.72))*.85*(1-ease((t-(START-2))/2));
-  if(strength<=0)return;
-  const left=k%2===0,x1=left?-20:w+20,y1=h*(.17+rand(k+3)*.57),x2=w*(left?.78:.22),y2=h*(.27+rand(k+22)*.45);
-  const points=boltPath(x1,y1,x2,y2,k*99+17,Math.min(100,h*.12));
-  ctx.save();ctx.globalCompositeOperation='screen';strokeBolt(points,strength,w<650?1.2:1.7);
-  for(const j of[7,13]){const [x,y]=points[j];strokeBolt(boltPath(x,y,x+(left?1:-1)*w*.17,y+(rand(k+j)>.5?1:-1)*h*.18,k*61+j,40,9),strength*.42,.8)}
+  const k=Math.floor((t-.8)/1.72),age=(t-.8)-k*1.72;
+  if(age>.52)return;
+  const flicker=age<.065?ease(age/.016):age<.15?.16:age<.21?.72:Math.exp(-(age-.21)*13)*.48;
+  const strength=flicker*(1-ease((t-(START-2))/2));
+  const fromLeft=k%2===0,seed=k*197+41;
+  const points=boltPath(fromLeft?-15:w+15,h*(.10+rand(k+3)*.38),w*(fromLeft?.88:.12),h*(.4+rand(k+22)*.42),seed,h*.34);
+  ctx.save();ctx.globalCompositeOperation='screen';strokeBolt(points,strength,w<650?.9:1.25);
+  for(let j=7;j<58;j+=7){
+   const [x,y]=points[j],length=(.06+rand(seed+j)*.18)*w,direction=fromLeft?1:-1;
+   const branch=boltPath(x,y,x+direction*length,y+(rand(j+seed+4)-.28)*h*.34,seed+j,length*.5,4);
+   strokeBolt(branch,strength*(.28+rand(j)*.32),.45);
+   if(j%2){const [bx,by]=branch[7];strokeBolt(boltPath(bx,by,bx+direction*length*.4,by-h*.065,seed+j+400,length*.2,3),strength*.24,.3)}
+  }
   ctx.restore();
+ }
+ const fracture=$('#fracture'),svgNS='http://www.w3.org/2000/svg';
+ function addCrack(points,width){const p=document.createElementNS(svgNS,'path');p.setAttribute('d',points.map(([x,y],i)=>`${i?'L':'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' '));p.setAttribute('pathLength','1');p.setAttribute('stroke-width',width);fracture.append(p)}
+ for(let i=0;i<8;i++){
+  const angle=i*Math.PI/4+.12,ex=500+Math.cos(angle)*470,ey=300+Math.sin(angle)*290;
+  const points=boltPath(500,300,ex,ey,71+i*81,65,5);addCrack(points,i%2?1.5:2.1);
+  for(const j of[12,22]){const [x,y]=points[j];addCrack(boltPath(x,y,x+Math.cos(angle+.65)*105,y+Math.sin(angle+.65)*90,i*21+j,28,3),.65)}
+ }
+ const eyePaint=[...document.querySelectorAll('.eye-paint')],eyeInk=[...document.querySelectorAll('.rough-eye-rim:not(.rim-alternate) .eye-ink')];let eyeFrame=-1;
+ function paintEyes(t){
+  const frame=reduced?0:Math.floor(t*12);if(frame===eyeFrame)return;eyeFrame=frame;
+  eyePaint.forEach((eye,index)=>{
+   const seed=(frame%19)*89+index*41,points=[];
+   for(let j=0;j<64;j++){const theta=j*Math.PI/32,r=14.7+(rand(seed+j)-.5)*3.8+(j%7===0?1.8:0);points.push([Math.cos(theta)*r,Math.sin(theta)*r])}
+   eye.setAttribute('d',points.map(([x,y],i)=>`${i?'L':'M'}${x.toFixed(2)} ${y.toFixed(2)}`).join(' ')+'Z');
+   let scratches='';for(let j=0;j<9;j++){const a=rand(seed+j*17)*Math.PI*2,r=13.1+rand(seed+j*9)*2.1,b=a+.08+rand(seed+j*11)*.18;scratches+=`M${Math.cos(a)*r} ${Math.sin(a)*r}Q${Math.cos((a+b)/2)*(r+.5)} ${Math.sin((a+b)/2)*(r+.5)} ${Math.cos(b)*r} ${Math.sin(b)*r} `}eyeInk[index].setAttribute('d',scratches);
+  });
+ }
+ const fogCanvas=$('#entrance-current'),fog=fogCanvas.getContext('2d');let fw=0,fh=0,doorEpoch=0;
+ function drawEntrance(now){
+  if(mode!=='door'){doorEpoch=0;fog.clearRect(0,0,fw,fh);return}
+  if(!doorEpoch)doorEpoch=now;
+  if(fw!==gate.clientWidth||fh!==gate.clientHeight){fw=gate.clientWidth;fh=gate.clientHeight;fogCanvas.width=fw;fogCanvas.height=fh}
+  const seconds=(now-doorEpoch)/1000;
+  fog.clearRect(0,0,fw,fh);if(reduced)return;
+  fog.globalCompositeOperation='screen';
+  for(let i=0;i<78;i++){
+   const progress=(seconds*.23+rand(i+31))%1,depth=progress*progress,lane=(rand(i+400)-.5)*2;
+   const x=fw*.5+lane*fw*(.10+depth*.95)+Math.sin(seconds*.6+i)*fw*.025*depth,y=fh*(.69+depth*.46);
+   const rx=fw*(.012+depth*.16),ry=fh*(.008+depth*.07),alpha=Math.sin(progress*Math.PI)*ease(seconds/1.1)*(.085+rand(i+12)*.095);
+   fog.save();fog.translate(x,y);fog.scale(1,ry/rx);
+   const cloud=fog.createRadialGradient(0,0,0,0,0,rx);cloud.addColorStop(0,`rgba(175,197,214,${alpha})`);cloud.addColorStop(.5,`rgba(133,157,181,${alpha*.7})`);cloud.addColorStop(1,'rgba(70,89,113,0)');fog.fillStyle=cloud;fog.fillRect(-rx,-rx,rx*2,rx*2);fog.restore();
+  }
+  fog.globalCompositeOperation='source-over';
  }
  function paint(now){
   const active=mode==='playing'||mode==='paused',t=mode==='static'?END+(now-backgroundStart)/1000:audio.currentTime,s=sequence(t),motion=reduced?0:t;
+  drawEntrance(now);
+  if(completed||s.faceOpacity>0)paintEyes(t);
+  fracture.style.opacity=(active||mode==='static')&&t>=END?String(.2+.7*(1-ease((t-END)/2))):'0';
+  fracture.style.setProperty('--crack-progress',mode==='static'||reduced?1:s.crack);
   ctx.clearRect(0,0,w,h);
   stars.forEach((star,i)=>{ctx.fillStyle=`rgba(191,166,223,${.13+(Math.sin(motion*.3+i)+1)*.09})`;ctx.beginPath();ctx.arc(star.x*w+Math.sin(motion*.04+i)*8,star.y*h+Math.cos(motion*.03+i)*5,star.r,0,Math.PI*2);ctx.fill()});
   if(active){
