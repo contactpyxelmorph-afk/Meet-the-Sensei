@@ -33,7 +33,7 @@ export function initializeExperience(){
  // Fragment links and browser scroll restoration cannot move the locked scene.
  window.addEventListener('scroll',()=>{if(locked&&window.scrollY)window.scrollTo(0,0)},{passive:true});
  window.addEventListener('hashchange',()=>{if(locked)window.scrollTo(0,0)});
- Promise.all([...document.querySelectorAll('.door-image,.character img')].map(img=>img.decode())).catch(()=>{note.textContent='Image unavailable. You can explore without the intro.'});
+ Promise.all([...document.querySelectorAll('.door-image,.character img')].map(img=>img.decode())).catch(()=>{note.textContent='Image unavailable. Press Escape to explore the profile.'});
  if(reduced)note.textContent='Reduced motion enabled · sound on';
  function initAudio(){
   if(!context){const Ctx=window.AudioContext||window.webkitAudioContext;if(Ctx){context=new Ctx();gain=context.createGain();context.createMediaElementSource(audio).connect(gain).connect(context.destination)}}
@@ -84,7 +84,7 @@ export function initializeExperience(){
   }catch(e){
    if(id!==runId)return;
    cancelDoor();audio.pause();audio.muted=false;mode='idle';gate.hidden=false;gate.inert=false;gate.classList.remove('opening');
-   $('#door-progress').textContent='';note.textContent='Playback could not start. Try again, or explore without the intro.';
+   $('#door-progress').textContent='';note.textContent='Playback could not start. Tap the door to retry, or press Escape to explore.';
   }finally{if(id===runId)$('#enter').disabled=false}
  }
  function finishStatic(){
@@ -97,7 +97,7 @@ export function initializeExperience(){
   if(completed)return;completed=true;hero.classList.add('settled','awakened');stage.removeAttribute('aria-hidden');
   $('#shockwave').classList.add('hit');status.textContent='SIX DISCIPLINES. ONE ORBIT.';
  }
- $('#enter').addEventListener('click',start);$('#replay').addEventListener('click',start);$('#quiet').addEventListener('click',finishStatic);$('#skip').addEventListener('click',finishStatic);
+ $('#enter').addEventListener('click',start);$('#replay').addEventListener('click',start);$('#skip').addEventListener('click',finishStatic);
  $('.skip-link').addEventListener('click',()=>{if(locked)finishStatic()});
  $('#pause').addEventListener('click',async()=>{
   if(audio.paused){await initAudio();try{await audio.play();mode='playing';$('#pause').textContent='Pause';scheduleEnvelope()}catch{status.textContent='PLAYBACK UNAVAILABLE · TRY REPLAY'}}

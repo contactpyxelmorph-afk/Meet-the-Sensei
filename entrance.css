@@ -14,6 +14,25 @@ html.intro-locked .hero-footer,html.intro-locked .hero-meta,html.intro-locked .t
 .portal-depth{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,#68478d20,transparent 65%),linear-gradient(90deg,#030207,#15102140 20%,#030207 50%,#15102140 80%,#030207);box-shadow:inset 0 0 55px 15px #000}
 .portal-depth:after{content:'';position:absolute;inset:12% 18% 0;border:1px solid #9d92c214;box-shadow:0 0 50px #9a87c609,inset 0 0 50px #9a87c609;transform:perspective(600px) rotateX(3deg)}
 .door-leaf{position:absolute;top:0;bottom:0;width:50%;overflow:hidden;backface-visibility:hidden;transform-style:preserve-3d;will-change:transform;box-shadow:0 0 1px 1px #030305}
+.door-leaf{--depth:clamp(18px,2.8vw,44px);overflow:visible;backface-visibility:visible;box-shadow:none}
+.door-front,.door-back{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;background:#15151b}
+.door-front{transform:translateZ(.5px);box-shadow:inset 0 0 0 2px #484650}
+.door-back{transform:translateZ(calc(-1 * var(--depth))) rotateY(180deg);background:repeating-linear-gradient(90deg,transparent 0 22%,#09090d 22% 24%),linear-gradient(110deg,#24242b,#0b0b10 55%,#303039);box-shadow:inset 0 0 0 7px #181820,inset 0 0 0 10px #393942}
+.door-edge{position:absolute;top:0;height:100%;width:var(--depth);transform-origin:left center;transform:rotateY(90deg);background:linear-gradient(90deg,#44434e,#1c1c25 18%,#30303a 74%,#09090f);border-top:1px solid #797581;border-bottom:1px solid #09090f}
+.door-edge-inner{left:100%}.door-edge-outer{left:0}
+.door-edge-top{position:absolute;top:0;left:0;width:100%;height:var(--depth);transform-origin:center top;transform:rotateX(-90deg);background:linear-gradient(#45434e,#13131a)}
+.door-hardware{position:absolute;top:55%;width:clamp(15px,2.8vw,34px);height:clamp(23px,4vw,48px);border:4px solid #787681;border-radius:48%;background:linear-gradient(110deg,#20212880,#05050880);box-shadow:2px 5px 7px #000,inset 1px 1px 2px #ddd8e866;transform:translateY(-50%)}
+.door-left .door-hardware{right:8%}.door-right .door-hardware{left:8%}
+.door-hardware:before{content:'';position:absolute;top:-7px;left:28%;width:44%;height:9px;border-radius:2px;background:linear-gradient(90deg,#27272f,#a5a1ac,#33313d)}
+.door-touch{position:absolute;left:29%;top:6%;width:42%;height:85.5%;z-index:5;cursor:pointer;background:transparent;padding:0;border:0}
+.door-touch:focus-visible{outline:1px solid #c9bdde80;outline-offset:-8px}
+.door-gate.opening .door-touch{pointer-events:none}
+.ground-mist{position:absolute;left:10%;right:10%;bottom:0;height:32%;pointer-events:none;opacity:0;transition:opacity 1.6s ease;z-index:3;filter:blur(12px);mask-image:linear-gradient(transparent,#000 35%,#000 75%,transparent)}
+.opening .ground-mist{opacity:.68}
+.ground-mist i{position:absolute;inset:0 -25%;background:radial-gradient(ellipse at 30% 68%,#bbc1d64d,transparent 35%),radial-gradient(ellipse at 68% 58%,#b4a8cf59,transparent 38%),radial-gradient(ellipse at 52% 79%,#d2d5e84d,transparent 35%);transform:scaleY(.65);animation:mist-flow 9s ease-in-out infinite alternate;animation-play-state:paused}
+.ground-mist i:nth-child(2){inset:15% -40% -10%;opacity:.7;animation-delay:-3s;animation-duration:7s}.ground-mist i:nth-child(3){inset:30% -10% -10%;opacity:.55;animation-delay:-6s;animation-duration:11s}
+.opening .ground-mist i{animation-play-state:running}
+@keyframes mist-flow{from{transform:translate3d(-8%,8%,0) scale(1,.65)}to{transform:translate3d(9%,-12%,0) scale(1.18,.85)}}
 .door-left{left:0;transform-origin:left center}.door-right{right:0;transform-origin:right center}
 .door-leaf img{position:absolute;width:476.190476%;height:116.959065%;max-width:none;top:-7.017544%;filter:brightness(.68);pointer-events:none}
 .door-left img{left:-138.095238%}.door-right img{left:-238.095238%}
@@ -50,5 +69,38 @@ html.intro-locked .hero-footer,html.intro-locked .hero-meta,html.intro-locked .t
 /* Facial light emerges as a single, soft layer after the last beat. */
 .face{transition:none}.character{transition:filter 1.2s ease}
 .eye-bloom{stroke-width:12;opacity:.72}.eye-core{stroke-width:5;opacity:.9}.eye-hot{stroke:#ff9dab;stroke-width:1.4;opacity:.8}.laser-streak{opacity:.12}.smile{stroke:#eeeaf4;stroke-width:2.6;opacity:.82;filter:drop-shadow(0 0 2px #ffffff44)}
+.eye-aura{fill:#eeeaff;filter:url(#eye-glow);opacity:.72}.eye-orb{fill:#fffdfd;filter:drop-shadow(0 0 2px #fff)}
+.eye-scribble{fill:none;stroke:#f6f3ff;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.8;animation:eye-scratch .19s steps(2,end) infinite alternate}
+.eye-scribble.alternate{stroke-width:1.1;opacity:.45;animation-delay:-.09s;animation-duration:.27s}
+.white-eye:nth-child(2) .eye-scribble{animation-delay:-.13s}
+@keyframes eye-scratch{0%{transform:translate(-1px,1px) rotate(-4deg);stroke-dasharray:21 6 39 3;stroke-dashoffset:0}100%{transform:translate(1px,-1px) rotate(3deg);stroke-dasharray:37 4 17 5;stroke-dashoffset:17}}
+@media(prefers-reduced-motion:reduce){.ground-mist i,.eye-scribble{animation:none!important}}
+.ground-mist{position:absolute;left:-15%;right:-15%;bottom:-9%;height:37%;z-index:3;filter:blur(9px);mask-image:linear-gradient(transparent 0%,#000 32%,#000 100%);transition:opacity 1.2s ease}
+.opening .ground-mist{opacity:.95}
+.ground-mist i{inset:0 -20%;background:radial-gradient(ellipse at 20% 70%,#c3c9df88,transparent 33%),radial-gradient(ellipse at 75% 55%,#a9b8d48c,transparent 32%),radial-gradient(ellipse at 47% 86%,#d5d9eac4,transparent 43%);animation-duration:5s;transform:scaleY(.8)}
+.ground-mist i:nth-child(2){inset:8% -35% 0;opacity:.65;animation-duration:6.5s;animation-delay:-2s;background:radial-gradient(ellipse at 32% 62%,#c9d0e27d,transparent 26%),radial-gradient(ellipse at 69% 74%,#e0e2f096,transparent 30%)}
+.ground-mist i:nth-child(3){inset:38% -25% -5%;opacity:.65;animation-duration:4s;animation-delay:-3s}
+@keyframes mist-flow{from{transform:translate3d(-13%,14%,0) scale(1,.7)}to{transform:translate3d(14%,-9%,0) scale(1.25,.95)}}
+.eye-scribble{stroke-width:1.4;opacity:.85;animation:none;filter:drop-shadow(0 0 1px #fff)}
+.eye-contour{transform-origin:0 0;animation:living-contour .45s ease-in-out infinite alternate}
+.eye-contour.second{stroke-width:.85;opacity:.6;animation-delay:-.23s;animation-duration:.61s}
+.white-eye:nth-child(2) .eye-contour{animation-delay:-.19s}
+.eye-wisp{fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;opacity:.65;filter:drop-shadow(0 0 2px #e9eaff);stroke-dasharray:27 45;animation:white-current 1.4s linear infinite}
+.eye-wisp.second{stroke-width:1.1;opacity:.35;animation-delay:-.8s;animation-duration:1.7s}
+@keyframes living-contour{from{transform:rotate(-12deg) scale(.93,1.06)}to{transform:rotate(9deg) scale(1.09,.92)}}
+@keyframes white-current{from{stroke-dashoffset:70}to{stroke-dashoffset:-72}}
+@media(prefers-reduced-motion:reduce){.eye-contour,.eye-wisp{animation:none!important}}
 @media(max-height:650px){.hero .hero-meta{top:28px}.hero .stage{top:40%;height:46svh;width:min(100%,900px)}.hero .character{width:min(73%,65svh)}.hero .hero-identity{bottom:86px}.hero .hero-identity h2{font-size:34px;margin:6px 0}.hero .hero-identity p{margin:8px 0;font-size:10px}.hero .hero-identity .eyebrow{font-size:6px}.door-heading{top:6%}.door-heading h1{font-size:22px}.door-interface{bottom:5%}}
 @media(max-height:650px){.hero .hero-meta{display:none}}
+
+.ground-mist{filter:url(#mist-distortion)}
+
+/* Circular chalk-white eyes: moving rough paint at the rim, no trailing lines. */
+.eye-disc,.eye-paint{fill:#fffdfb}.eye-aura{fill:#f8f6ff;opacity:.8}
+.rough-eye-rim{animation:chalk-flicker .32s steps(3,end) infinite;transform-origin:0 0}
+.eye-chalk{fill:none;stroke:#fffdfb;stroke-width:1.1;stroke-linecap:butt}
+.eye-ink{fill:none;stroke:#17151a;stroke-width:.7;opacity:.72}
+.rim-alternate{animation-direction:reverse;animation-duration:.41s;opacity:.7}
+.white-eye:nth-child(2) .rough-eye-rim{animation-delay:-.17s}
+@keyframes chalk-flicker{0%{transform:rotate(-7deg) scale(1,.98)}33%{transform:rotate(4deg) scale(.99,1.02)}66%{transform:rotate(-2deg) scale(1.02,1)}100%{transform:rotate(6deg) scale(1,.99)}}
+@media(prefers-reduced-motion:reduce){.rough-eye-rim{animation:none}}
